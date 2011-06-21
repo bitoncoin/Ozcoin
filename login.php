@@ -38,6 +38,12 @@ $checkPassQ = mysql_query("SELECT id, secret, pass, accountLocked, accountFailed
 $checkPass = mysql_fetch_object($checkPassQ);
 $userExists = $checkPass->id;
 
+if($checkPass->accountFailedAttempts >= 5){
+echo "Account has been banned";
+die();
+}
+
+
 //Check if user exists before checking login data
 if($userExists > 0){
 	//Check to see if this user has an `accountLocked`
@@ -63,8 +69,12 @@ if($userExists > 0){
 			
 				//Display output message
 				$outputMessage = "Welcome back, we'll be returning to the main page shortly";	
+				$lock = 0;
+				mysql_query("UPDATE `webUsers` SET accountFailedAttempts = ".$lock." WHERE `id` = ".$userExists);
 			}else{
 				$outputMessage =  "Wrong username or password? Huh? I copy and pasted how could it be wrong?...!!";
+				$lock = $checkPass->accountFailedAttempts + 1;
+				mysql_query("UPDATE `webUsers` SET accountFailedAttempts = ".$lock." WHERE `id` = ".$userExists);
 			}
 		}
 	}

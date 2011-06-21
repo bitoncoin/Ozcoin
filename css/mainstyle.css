@@ -46,6 +46,11 @@ input{
 	border: 1px solid #000;
 }
 
+.hide
+{
+	display:none;
+}
+
 /*-----End of Defaults------*/
 
 a.menu:active,a.menu:link,a.menu:visited{
@@ -159,19 +164,16 @@ span.returnMessage{
 #leftsidebar {
 	float: left;
 	background-color:#DDD;
-	width: 16em;
-	padding:.5em;
+	width: 247px;
+	padding:10px;
 	overflow: none;
-
 }
 
 #content {
 	white-space: normal;
-	padding: 1em;
-	margin: .5em;
-	margin-left: 17em;
+	margin-left: 277px;
+	margin-top: 10px;
 	background-color: #FFF;
-
 }
 
 #currentRates {
@@ -183,6 +185,16 @@ span.returnMessage{
 	width: 1024px;
 	padding:0px;
 	margin:0px;
+}
+
+#new_user_message{
+	width: 1024px;
+}
+
+#new_user_message p
+{
+	margin: 10px;
+	padding: 0px;
 }
 
 #stats_members {
@@ -252,11 +264,19 @@ span.returnMessage{
   border-right: 2px solid #333;
 }
 
-.stats_table th+th[scope=col], .leftheader
+.stats_table th+th[scope=col],
+{
+  color: #fff;
+  background-color: #7d98b3;
+  border-right: 1px dotted #666;
+}
+
+.leftheader
 {
   color: #fff !important;
   background-color: #7d98b3;
-  border-right: 1px dotted #666;
+  border-right: 2px solid #333;
+  border-bottom: 2px solid #333;
 }
 
 .stats_table th[scope=row]

@@ -30,7 +30,9 @@ Or download the client to your PC from: <a href="http://www.bitcoin.org//" targe
 You need to have the latest drivers installed to start minning. Current is 11.5<br><br>
 
 	<b><u>Windows</u></b><br/>
-	Download GUIMiner: <a href="/files/guiminer-20110609.exe" style="color: blue">HERE</a><br><br>
+	GUIMiner: <a href="/files/guiminer-20110609.exe" style="color: blue">HERE</a><br>
+	Phoenix: <a href=http://forum.bitcoin.org/index.php?topic=6458.0 style="color: blue">HERE</a><br><br>
+	<hr size="1" width="50%"></hr><br>
 	<img src="/images/guiminer.png"><br/><br>
 	<b><u>GUIMiner options</b></u><br/>
 	Server: Other</br>
@@ -42,11 +44,8 @@ You need to have the latest drivers installed to start minning. Current is 11.5<
 	Extra Flags: Can be blank, but I find "-v -w128 -f 60" to work well<br/><br/>
 	
 	<b><u>Linux</u></b><br/>
-	Download hashkill: <a href="/files/hashkill-0.2.4-x86_64.tgz" style="color: blue">64-bit</a> <a href="/files/hashkill-0.2.4-x86.tgz" style="color: blue">32-bit</a><br/>
-	Decompress (tar zxvf hashkill-0.2.4-x86.tar.gz)<br/>
-	Change directory to hashkill<br/>
-	Run: sudo ./install.sh<br/>
-	Run hashkill: hashkill-gpu -p bitcoin minername:password:ozco.in:8332
+	Download Phoenix: <a href="http://svn3.xp-dev.com/svn/phoenix-miner/files/phoenix-1.4.tar.bz2" style="color: blue">Download</a><br/>
+	<a href=http://forum.bitcoin.org/index.php?topic=6458.0>Howto Setup and Info</a>
 	
 	
 <?php include("includes/footer.php"); ?>

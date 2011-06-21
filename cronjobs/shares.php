@@ -15,7 +15,6 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // 	  BTC Donations: 163Pv9cUDJTNUbadV4HMRQSSj3ipwLURRc
-
 $includeDirectory = "/var/www/includes/";
 
 include($includeDirectory."requiredFunctions.php");
@@ -42,10 +41,8 @@ try {
 		"         UNION " .
 		"          " .
 		"         SELECT   COUNT(s.id) AS id, " .
-		"                  p.associatedUserId " .
+		"                  s.userId " .
 		"         FROM     shares_history s " .
-		"                  JOIN pool_worker p " .
-		"                  ON       p.username = s.username " .
 		"         WHERE    s.our_result        ='Y' " .
 		"         AND      s.counted           =0 " .
 		"         AND      s.blockNumber       > " .
@@ -53,7 +50,7 @@ try {
 		"                  FROM    networkBlocks " .
 		"                  WHERE   confirms > 0 " .
 		"                  ) " .
-		"         GROUP BY p.associatedUserId " .
+		"         GROUP BY s.userId " .
 		"         ) " .
 		"         a " .
 		"GROUP BY associatedUserId";
@@ -66,8 +63,8 @@ try {
 		$totalsharesthisround += $row["id"];
 	}
 	
-	$sql = "UPDATE webUsers SET shares_this_round=0 WHERE id NOT IN (".implode(',', $id).")";
-	mysql_query($sql);
+//	$sql = "UPDATE webUsers SET shares_this_round=0 WHERE id NOT IN (".implode(',', $id).")";
+//	mysql_query($sql);
 } catch (Exception $ex)  { }
 mysql_query("UPDATE settings SET value='".$totalsharesthisround."' WHERE setting='currentroundshares'");
 ?>

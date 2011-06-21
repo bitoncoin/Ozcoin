@@ -31,7 +31,7 @@ if(!$cookieValid || $isAdmin != 1) {
 
 $act = mysql_real_escape_string($_POST["act"]);
 
-if (isset($act))
+if (isset($act) && isset($_POST["authPin"]))
 {
 	$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
 	//Make sure an authPin is set and valid when $act is active

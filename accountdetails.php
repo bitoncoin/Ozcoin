@@ -52,8 +52,9 @@ $goodMessage = "";
 
 
 
-$act = $_POST["act"];
+$act = NULL;
 if (isset($_POST["act"])) {
+	$act = $_POST["act"];
 	$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
 		
 

@@ -21,22 +21,32 @@ Website Reference:http://www.gnu.org/licenses/gpl-2.0.html
 
 //RPC Bitcoind Client Information
 $rpcType = "http"; // http or https
-$rpcUsername = "coinz"; // username
-$rpcPassword = "coinz11"; // password
+$rpcUsername = "changeme"; // username
+$rpcPassword = "changeme11"; // password
 $rpcHost = "localhost";
 
 
 //Login to Mysql with the following
 $dbHost = "localhost";
-$dbUsername = "bitcoin";
-$dbPassword = "bitcoin11";
+$dbUsername = "changeme";
+$dbPassword = "changeme11";
 $dbPort = "3306";
 $dbDatabasename = "pushpool";
 
 //Cookie settings | More Info @ http://us.php.net/manual/en/function.setcookie.php
-$cookieName = "simplecoinus"; //Set this to what ever you want "Cheesin?"
+$cookieName = ""; //Set this to what ever you want "Cheesin?"
 $cookiePath = "/";	//Choose your path!
-$cookieDomain = "ozco.in"; //Set this to your domain
+$cookieDomain = ""; //Set this to your domain
+
+// Who to show errors for
+//$developers = array(
+//	'IP' 
+//);
+//$developerPassword = '';
+
+//if (in_array($_SERVER['REMOTE_ADDR'], $developers) or isset($_GET['dev']) and $_GET['dev'] == $developerPassword) {
+//	ini_set('display_errors', '1');
+//}
 
 include("bitcoinController/bitcoin.inc.php");
 
