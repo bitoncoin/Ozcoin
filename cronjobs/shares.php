@@ -27,6 +27,9 @@ if (isset($cronRemoteIP) && $_SERVER['REMOTE_ADDR'] !== $cronRemoteIP) {
 lock("shares.php");
 
 try {
+	$lastBlockQ = mysql_query("SELECT IFNULL(MAX(blockNumber), 0) AS blockNumber FROM networkBlocks WHERE confirms > 0");
+	$lastBlockR = mysql_fetch_object($lastBlockQ);
+
 	$sql = "" .
 		"SELECT   SUM(id) AS id, " .
 		"         a.associatedUserId " .
@@ -45,11 +48,7 @@ try {
 		"         FROM     shares_history s " .
 		"         WHERE    s.our_result        ='Y' " .
 		"         AND      s.counted           =0 " .
-		"         AND      s.blockNumber       > " .
-		"                  (SELECT IFNULL(MAX(blockNumber), 0) " .
-		"                  FROM    networkBlocks " .
-		"                  WHERE   confirms > 0 " .
-		"                  ) " .
+		"         AND      s.blockNumber       > " . $lastBlockR->blockNumber .
 		"         GROUP BY s.userId " .
 		"         ) " .
 		"         a " .
@@ -67,4 +66,6 @@ try {
 //	mysql_query($sql);
 } catch (Exception $ex)  { }
 mysql_query("UPDATE settings SET value='".$totalsharesthisround."' WHERE setting='currentroundshares'");
+
+
 ?>

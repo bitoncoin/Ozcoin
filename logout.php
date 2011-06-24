@@ -1,13 +1,13 @@
 <?php 
 include("includes/requiredFunctions.php");
 
-setcookie($cookieName, false);
+setcookie($cookieName, 0, $timeoutStamp, $cookiePath, $cookieDomain);
 ?>
 <html>
   <head>
 	<title><?php echo antiXss(outputPageTitle());?> </title>
 	<link rel="stylesheet" href="/css/mainstyle.css" type="text/css" />
-	<meta http-equiv="refresh" content="2;url=/">
+	<? header('Location: /'); ?>
   </head>
   <body>
 	<div id="pagecontent">

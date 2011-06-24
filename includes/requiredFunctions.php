@@ -34,19 +34,28 @@ $dbPort = "3306";
 $dbDatabasename = "pushpool";
 
 //Cookie settings | More Info @ http://us.php.net/manual/en/function.setcookie.php
-$cookieName = ""; //Set this to what ever you want "Cheesin?"
+$cookieName = "ozcoin"; //Set this to what ever you want "Cheesin?"
 $cookiePath = "/";	//Choose your path!
-$cookieDomain = ""; //Set this to your domain
+$cookieDomain = "ozco.in"; //Set this to your domain
 
 // Who to show errors for
-//$developers = array(
-//	'IP' 
-//);
-//$developerPassword = '';
+$developers = array(
+	'127.0.0.1' // set this to your ip to see errors
+);
+$developerPassword = ''; // set this password for ppl to show errors using password 
 
-//if (in_array($_SERVER['REMOTE_ADDR'], $developers) or isset($_GET['dev']) and $_GET['dev'] == $developerPassword) {
-//	ini_set('display_errors', '1');
-//}
+$isDeveloper = false;
+if (in_array($_SERVER['REMOTE_ADDR'], $developers) or isset($_GET['dev']) and $_GET['dev'] == $developerPassword) {
+	ini_set('display_errors', '1');
+	ini_set('html_errors', '1');
+	ini_set('xdebug.default_enable', '1');
+	ini_set('xdebug.collect_vars', 'on');
+	ini_set('xdebug.collect_params', '4');
+	ini_set('xdebug.dump_globals', 'on');
+	ini_set('xdebug.dump.SERVER', 'REQUEST_URI');
+	ini_set('xdebug.show_local_vars', 'on');
+	$isDeveloper = true;
+}
 
 include("bitcoinController/bitcoin.inc.php");
 
@@ -85,21 +94,25 @@ class checkLogin
 		//Split cookie into 2 mmmmm!
 		$cookieInfo = explode("-", $input);
 		
+		$validCookie = false;
+		
 		//Get "secret" from MySql database
 		$getSecretQ	= mysql_query("SELECT secret, pass, sessionTimeoutStamp FROM webUsers WHERE id = ".mysql_real_escape_string($cookieInfo[0])." LIMIT 0,1");
-		$getSecret	= mysql_fetch_object($getSecretQ);
-		$password	= $getSecret->pass;
-		$secret	= $getSecret->secret;
-		$timeoutStamp	= $getSecret->sessionTimeoutStamp;
+		if ($getSecret = mysql_fetch_object($getSecretQ)) {
+			$password	= $getSecret->pass;
+			$secret	= $getSecret->secret;
+			$timeoutStamp	= $getSecret->sessionTimeoutStamp;
+				
+			//Create a variable to test the cookie hash against
+			$hashTest = hash("sha256", $secret.$password.$ipaddress.$timeoutStamp.$salt);
+				
+			//Test if $hashTest = $cookieInfo[1] hash value; return results
 			
-		//Create a variable to test the cookie hash against
-		$hashTest = hash("sha256", $secret.$password.$ipaddress.$timeoutStamp.$salt);
-			
-		//Test if $hashTest = $cookieInfo[1] hash value; return results
-		$validCookie = false;			
-		if($hashTest == $cookieInfo[1]){		
-			$validCookie = true;
-		}				
+			if($hashTest == $cookieInfo[1]){		
+				$validCookie = true;
+			}				
+		}
+		
 		return $validCookie;
 	}
 	

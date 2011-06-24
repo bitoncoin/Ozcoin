@@ -55,7 +55,12 @@ $goodMessage = "";
 $act = NULL;
 if (isset($_POST["act"])) {
 	$act = $_POST["act"];
-	$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
+
+if (isset($_POST["authPin"])) {
+$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
+} ELSE {
+$inputAuthPin = NULL;
+}
 		
 
 	//Check if authorization pin has been inputted correctly
@@ -157,7 +162,7 @@ if (isset($_POST["act"])) {
 		}
 
 
-}else if($inputAuthPin != $authPin && $act != "addWorker"){
+}else if($inputAuthPin != $authPin && $act != "addWorker" && $act != "Update Worker" && $act != "Delete Worker"){
 		$returnError = "Authorization Pin is Invalid!";
 	}
 	

@@ -60,6 +60,11 @@ $inDatabase = mysql_num_rows($inDatabaseQ);
 if(!$inDatabase){
 	//Add this block into the `networkBlocks` log
 	$currentTime = time();
+	//Don't delete shares until a new block is started
+	//Go through every share and add it to the shares_history database
+
+    mysql_query("BEGIN");
+	
 	mysql_query("INSERT INTO `networkBlocks` (`blockNumber`, `timestamp`) VALUES ('$currentBlockNumber', '$currentTime')");
 
     $sql = "" .
@@ -87,11 +92,6 @@ if(!$inDatabase){
         "              AND    pw.associatedUserId = wu.id " .
         "       ) ";
     mysql_query($sql);
-
-	//Don't delete shares until a new block is started
-	//Go through every share and add it to the shares_history database
-
-    mysql_query("BEGIN");
 
     $result = mysql_query("SELECT id FROM shares ORDER BY id DESC LIMIT 1");
     $top_id = mysql_fetch_object($result);
@@ -147,7 +147,7 @@ for($i = 0; $i < $numAccounts; $i++){
 
 
 //Go through all the transctionss from bitcoind and update their confirms
-$blockExistsQ = mysql_query("SELECT id,accountAddress FROM networkBlocks WHERE confirms >= 1 and confirms <= 121 ORDER BY blockNumber DESC LIMIT 1")or die(mysql_error());
+$blockExistsQ = mysql_query("SELECT id,accountAddress FROM networkBlocks WHERE confirms >= 1 and confirms <= 121 ORDER BY blockNumber")or die(mysql_error());
 $blockExists = mysql_num_rows($blockExistsQ);
 
 while ($blockExistsR = mysql_fetch_object($blockExistsQ)) {
@@ -161,6 +161,59 @@ while ($blockExistsR = mysql_fetch_object($blockExistsQ)) {
 	mysql_query("UPDATE networkBlocks SET confirms = '".$confirms."' WHERE id = ".$winningId);
 }
 
+// count rounds
+
+mysql_query('BEGIN');
+mysql_query('DELETE r.* FROM rounds r JOIN networkBlocks nb ON r.blockNumber = nb.blockNumber WHERE nb.confirms < 1');
+
+$sql = "SELECT nb.blockNumber
+		FROM networkBlocks nb
+		LEFT OUTER JOIN rounds r
+			ON r.blockNumber = nb.blockNumber
+		WHERE r.blockNumber is null
+			AND nb.confirms > 0
+		ORDER BY nb.blockNumber ASC";
+$blocksQ = mysql_query($sql) or die(mysql_error());
+
+while ($block = mysql_fetch_object($blocksQ)) {	
+	$blockNumber = $block->blockNumber;
+	
+	$previousBlockQ = mysql_query("SELECT blockNumber FROM rounds WHERE blockNumber < '$blockNumber' ORDER BY blockNumber DESC LIMIT 1");
+	$previousBlock = mysql_fetch_object($previousBlockQ);
+
+	$previousBlockNumber = 0;
+	if ($previousBlock != null) {
+		$previousBlockNumber = $previousBlock->blockNumber;
+	}
+	
+	$sql = "INSERT INTO rounds (blockNumber, shares)
+			SELECT '$blockNumber', COUNT(sh.id)
+			FROM shares_history sh
+			WHERE our_result = 'Y'
+				AND sh.blockNumber > '$previousBlockNumber'
+				AND sh.blockNumber <= '$blockNumber'";
+	
+	mysql_query($sql) or die(mysql_error());
+	$roundId = mysql_insert_id();
+	
+	$sql = "INSERT INTO roundDetails (roundId, userId, shares, estimate)
+			SELECT
+				r.id,
+				userId,
+				COUNT(sh.id) AS shares,
+				(COUNT(sh.id)/r.shares*49.5)*(1-(wu.donate_percent/100)) AS estimate
+			FROM shares_history sh
+			JOIN webUsers wu ON wu.id = sh.userId
+			JOIN rounds r ON r.blockNumber = '$blockNumber'
+			WHERE sh.our_result = 'Y'
+				AND sh.blockNumber > '$previousBlockNumber'
+				AND sh.blockNumber <= '$blockNumber'
+			GROUP BY sh.userId";
+	mysql_query($sql) or die(mysql_error());
+}
+
+mysql_query('COMMIT');
+
 //Go through all of `shares_history` that are uncounted shares; Check if there are enough confirmed blocks to award user their BTC
 	//Get uncounted shares
 	$overallReward = 0;
@@ -169,53 +222,71 @@ while ($blockExistsR = mysql_fetch_object($blockExistsQ)) {
 	while ($blocks = mysql_fetch_object($blocksQ)) {
 		$block = $blocks->blockNumber;
 
-		$totalRoundSharesQ = mysql_query("SELECT count(id) as id FROM shares_history WHERE counted = '0' AND blockNumber <= ".$block);
+		$totalRoundSharesQ = mysql_query("SELECT count(id) as id FROM shares_history WHERE counted = '0' AND our_result = 'Y' AND blockNumber <= ".$block);
 		if ($totalRoundSharesR = mysql_fetch_object($totalRoundSharesQ)) {
 			$totalRoundShares = $totalRoundSharesR->id;
             $sql = "SELECT DISTINCT sh.userId, count(sh.id) as id, wu.donate_percent
                     FROM shares_history sh
                     JOIN webUsers wu ON sh.userId = wu.id
-                    WHERE sh.counted = '0' AND sh.blockNumber <= $block GROUP BY sh.userId";
+                    WHERE sh.counted = '0' AND our_result = 'Y' AND sh.blockNumber <= $block GROUP BY sh.userId";
 			$userListCountQ = mysql_query($sql) or die(mysql_error());
-			while ($userListCountR = mysql_fetch_object($userListCountQ)) {
+			try {
 				mysql_query("BEGIN");
-				$userId = $userListCountR->userId;
-				$uncountedShares = $userListCountR->id;
-                $donatePercent = $userListCountR->donate_percent;
-
-				$shareRatio = $uncountedShares/$totalRoundShares;
-				$predonateAmount = 50 * $shareRatio;
-                $totalReward = (1-($sitePercent/100)) * $predonateAmount;
-
-				if ($predonateAmount > 0.00000001)	{
 				
-					//Take out donation
-					$totalReward = $totalReward - ($totalReward * ($donatePercent/100));
+				while ($userListCountR = mysql_fetch_object($userListCountQ)) {
+					$userId = $userListCountR->userId;
+					$uncountedShares = $userListCountR->id;
+					$donatePercent = $userListCountR->donate_percent;
+
+					$shareRatio = $uncountedShares/$totalRoundShares;
+					$predonateAmount = 50 * $shareRatio;
+					$totalReward = (1-($sitePercent/100)) * $predonateAmount;
+
+					if ($predonateAmount > 0.00000001)	{
 					
-					//Round Down to 8 digits
-					$totalReward = $totalReward * 100000000;
-					$totalReward = floor($totalReward);
-					$totalReward = $totalReward/100000000;
-					
-					//Get total site reward
-					$donateAmount = $predonateAmount - $totalReward;
+						//Take out donation
+						$totalReward = $totalReward - ($totalReward * ($donatePercent/100));
+						
+						//Round Down to 8 digits
+						$totalReward = $totalReward * 100000000;
+						$totalReward = floor($totalReward);
+						$totalReward = $totalReward/100000000;
+						
+						//Get total site reward
+						$donateAmount = $predonateAmount - $totalReward;
+								
+						$overallReward += $totalReward;
+						
+						echo("PAID: ($userId, $totalReward, $block, $uncountedShares, $totalRoundShares, $sitePercent, $donatePercent)\n");
+
+						// Log what happened
+						$sql = "INSERT INTO accountHistory (userId, balanceDelta, blockNumber, userShares, totalShares, sitePercent, donatePercent) VALUES " .
+								"($userId, $totalReward, $block, $uncountedShares, $totalRoundShares, $sitePercent, $donatePercent)";
+						if (!mysql_query($sql)) {
+							throw new Exception(mysql_error());
+						}
+
+						//Update balance
+						$updateOk = mysql_query("UPDATE accountBalance SET balance = balance + ".$totalReward." WHERE userId = ".$userId);
+						if (!$updateOk) {
+							$result = mysql_query("INSERT INTO accountBalance (userId, balance) VALUES (".$userId.",'".$totalReward."')");
+							if (!$result) {
+								 throw new Exception(mysql_error());
+							}
+						}
 							
-					$overallReward += $totalReward;
+					}
 					
-					echo("PAID: ($userId, $totalReward, $block, $uncountedShares, $totalRoundShares, $sitePercent, $donatePercent)\n");
-
-                    // Log what happened
-                    $sql = "INSERT INTO accountHistory (userId, balanceDelta, blockNumber, userShares, totalShares, sitePercent, donatePercent) VALUES " .
-                            "($userId, $totalReward, $block, $uncountedShares, $totalRoundShares, $sitePercent, $donatePercent)";
-                    mysql_query($sql) or die(mysql_error());
-
-					//Update balance
-					$updateOk = mysql_query("UPDATE accountBalance SET balance = balance + ".$totalReward." WHERE userId = ".$userId) or die(mysql_error());
-					if (!$updateOk)
-						mysql_query("INSERT INTO accountBalance (userId, balance) VALUES (".$userId.",'".$totalReward."')") or die(mysql_error());
+					$result = mysql_query("UPDATE shares_history SET counted = '1' WHERE userId='".$userId."' AND blockNumber <= ".$block." AND counted = '0'");
+					if (!$result) {
+						 throw new Exception(mysql_error());
+					}					
 				}
-				mysql_query("UPDATE shares_history SET counted = '1' WHERE userId='".$userId."' AND blockNumber <= ".$block." AND counted = '0'");
+				
 				mysql_query("COMMIT");
+			} catch (Exception $e) {
+				echo("Exception: " . $e->getMessage() . "\n");
+				mysql_query("ROLLBACK");
 			}
 		}
 		$poolReward = $B -$overallReward;

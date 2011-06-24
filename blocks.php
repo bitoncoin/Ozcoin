@@ -18,9 +18,16 @@
 $pageTitle = "- Block Info";
 include ("includes/header.php");
 
-echo "<h2>Blocks Found</h2><br/>";
-echo "<table width=600 border=1 cellspacing=1 cellpadding=5>";
-echo "<tr><td align=left><B>Block</B></td><td align=left><B>Confirms</B></td><td align=left><b>Finder</b></td><td align=left><b>Time</b></td></tr>";
+echo "<table class=\"stats_table blocks_width bottom_spacing\">";
+echo "<tr><th scope=\"col\" colspan=\"7\">Blocks Found</th></tr>";
+echo "<tr><th scope=\"col\">Block</th>";
+echo "<th scope=\"col\">Confirms</th>";
+echo "<th scope=\"col\">Finder</th>";
+echo "<th scope=\"col\">Time</th>";
+echo "<th scope=\"col\" class=\"align_right\">Earnings</th>";
+echo "<th scope=\"col\" class=\"align_right\">Shares</th>";
+echo "<th scope=\"col\" class=\"align_right\">Totals Shares</th></tr>";
+
 
 $result = mysql_query("SELECT blockNumber, confirms, timestamp FROM networkBlocks WHERE confirms > 1 ORDER BY blockNumber DESC");
 
@@ -29,23 +36,54 @@ while($resultrow = mysql_fetch_object($result)) {
 	$resdss = mysql_query("SELECT username FROM shares_history WHERE upstream_result = 'Y' AND blockNumber = $resultrow->blockNumber");
 	$resdss = mysql_fetch_object($resdss);
 
+	$resulta = mysql_query("SELECT userid, balanceDelta, userShares, totalShares FROM accountHistory WHERE blockNumber = '$resultrow->blockNumber' AND userid = '".$userId."'") or sqlerr(__FILE__, __LINE__);
+	$resdssa = mysql_fetch_object($resulta);
+
+	$blockNo = $resultrow->blockNumber;
+
 	$splitUsername = explode(".", $resdss->username);
 	$realUsername = $splitUsername[0];
 
 	$confirms = $resultrow->confirms;
 
 	if ($confirms > 120) {
-		$confirms = Completed;
+		$confirms = 'Completed';
 	}
 
-	echo "<td align=left>$resultrow->blockNumber</td>";
-	echo "<td align=left>$confirms</td>";
-	echo "<td align=left>$realUsername</td>";
-	echo "<td align=left>".strftime("%B %d %Y %r",$resultrow->timestamp)."</td>";
+if($resdssa == NULL || $resdssa->balanceDelta == NULL){
+
+	// FIX THIS CODE IF MISSING DATA IS INSERTED ************************************************
+	if( $blockNo <= 131574 )
+	{
+		$est = "Before Upgrade";
+		$users = "Before Upgrade";
+		$totals = "Before Upgrade";
+	}
+	else
+	{
+		$est = "Missing Data";
+		$users = "Missing Data";
+		$totals = "Missing Data";
+	}
+
+} ELSE  {
+	$est = number_format( $resdssa->balanceDelta, 8 );
+	$users = number_format( $resdssa->userShares );
+	$totals = number_format( $resdssa->totalShares );
+}
+
+	echo "<td><a href=\"http://blockexplorer.com/b/" . $blockNo . "\">" . number_format( $blockNo ) . "</a></td>";
+	echo "<td>" . $confirms . "</td>";
+	echo "<td>$realUsername</td>";
+	echo "<td>".strftime("%B %d %Y %r",$resultrow->timestamp)."</td>";
+	echo "<td class=\"align_right\">" . $est . "</td>";
+	echo "<td class=\"align_right\">" . $users . "</td>";
+	echo "<td class=\"align_right\">" . $totals . "</td>";
 }
 
 echo "</table>";
 echo "You will not get paid till Confirms have hit 120";
-echo "<br><a href=stats.php style=\"color: blue\">Back to stats</a><br>";
+echo "<br /><a class=\"fancy_button top_spacing\" href=\"stats.php\">";
+echo "<span style=\"background-color: #070;\">Stats</span></a>";
 
 include("includes/footer.php");

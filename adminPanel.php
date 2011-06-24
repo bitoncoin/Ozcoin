@@ -29,13 +29,16 @@ if(!$cookieValid || $isAdmin != 1) {
 	exit;
 }
 
-$act = mysql_real_escape_string($_POST["act"]);
-
-if (isset($act) && isset($_POST["authPin"]))
+if (isset($_POST["act"]) && isset($_POST["authPin"]))
 {
-	$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
+if (isset($_POST["authPin"])) {
+$inputAuthPin = hash("sha256", $_POST["authPin"].$salt);
+} ELSE {
+$inputAuthPin = NULL;
+}
+
 	//Make sure an authPin is set and valid when $act is active
-	if($act && $authPin == $inputAuthPin){
+	if($_POST["act"] && $_POST["authPin"] == $inputAuthPin){
 		//Update information if needed
 		if($act == "UpdateMainPageSettings"){
 			try {		

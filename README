@@ -1,3 +1,13 @@
+If you wish to use this open source project please keep the links to previous coders.
+
+How to use:
+1) Upload data to ur website.
+2) Run mysql file in mysql db
+3) Edit /include/requiredFuntions.php set the varibles mysql login/password , bitocind login/password , Domain name
+4) setup cronjobs to run every 10 mins and payout for hourly (or your choice)
+5) go into database edit settings to match your site info.
+6) i think thats it. have fun.
+
 Writings of a mad man
 
 Wayno

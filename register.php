@@ -113,7 +113,8 @@ if($usernameExists == 0){
 			mysql_query("INSERT INTO pool_worker (associatedUserId, username, password) VALUES (".$returnId.",'".$username.".1','1234')");
 			$goodMessage = "Your account has been successfully created. Please login to continue.";
 		}else{
-			$returnError = "Database error | User was not added to database, Please contact the admin.";
+			//$returnError = "Database error | User was not added to database, Please contact the admin.";
+			$returnError = "Invalid registration: " . $returnError;
 			}
 }else if($usernameExists > 0){
 								$returnError = "That username is already registered with us";
