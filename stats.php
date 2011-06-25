@@ -215,34 +215,9 @@ if( $cookieValid && $user_found == false )
 <div id="stats_server">
 
 <?php
-// SHOW USER TOTAL PAID  *************************************************************************************************************************
-
-if( $cookieValid ) // show only for logged in users
-{
-
-	echo "<table class=\"money_table server_width\">";
-	echo "<tr><th scope=\"col\" colspan=\"2\">Total BTC Earned</th></tr><tr class=\"moneyheader\"><td class=\"bitcoin_image\"><img class=\"earned_coin\" src=\"/images/bitcoin.png\" /></td><td class=\"bitcoins\">";
-
-	$result = mysql_query( "SELECT sum(balanceDelta) as amount_earned  FROM accountHistory WHERE userid = '" . $userInfo->id . "'" );
-	if ($resultrow = mysql_fetch_object($result))
-	{
-		echo $resultrow->amount_earned;
-	}
-
-	echo "</td></tr></table>";
-
-}
-
 // START SERVER STATS *************************************************************************************************************************
 
-if( $cookieValid ) // fix spacing issue if user isnt logged in
-{
-	echo "<table class=\"stats_table server_width top_spacing\">";
-}
-else
-{
-	echo "<table class=\"stats_table server_width\">";
-}
+echo "<table class=\"stats_table server_width\">";
 
 echo "<tr><th colspan=\"2\" scope=\"col\">Server Stats</td></tr>";
 
@@ -352,7 +327,7 @@ while($resultrow = mysql_fetch_object($result)) {
 
 echo "</table>";
 
-// SERVER HASHRATE/TIME GRAPH *************************************************************************************************************************
+// SERVER BLOCKS/TIME GRAPH *************************************************************************************************************************
 // http://www.filamentgroup.com/lab/update_to_jquery_visualize_accessible_charts_with_html5_from_designing_with/
 // table is hidden, graph follows
 
@@ -392,6 +367,7 @@ while($resultrow = mysql_fetch_object($result)) {
 }
 
 echo "</tbody></table>";
+
 echo "</div><div class=\"clear\"></div></div><div id=\"stats_wrap_2\" class=\"top_spacing\">";
 
  // ONION WINNERS (most stale % + must be active this round)  *************************************************************************************************************************

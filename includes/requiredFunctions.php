@@ -40,9 +40,10 @@ $cookieDomain = "ozco.in"; //Set this to your domain
 
 // Who to show errors for
 $developers = array(
-	'127.0.0.1' // set this to your ip to see errors
+	'', //
+	'' // 
 );
-$developerPassword = ''; // set this password for ppl to show errors using password 
+$developerPassword = '';
 
 $isDeveloper = false;
 if (in_array($_SERVER['REMOTE_ADDR'], $developers) or isset($_GET['dev']) and $_GET['dev'] == $developerPassword) {

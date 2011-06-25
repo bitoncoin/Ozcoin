@@ -23,14 +23,16 @@
 	<div class="menuBtn">
 		<a href="/adminPanel.php" class="menu">(Admin Panel)</a>
 	</div>
-	<?php	
+	<?php
 		}
 	}
 	?>
 	<div class="menuBtn">
-		<a href="/stats.php" class="menu">Stats</a>
+		<a href="/stats.php" class="menu">Pool Stats</a>
 	</div>
-
+	<div class="menuBtn">
+		<a href="/my_stats.php" class="menu">My Stats</a>
+	</div>
 	<div class="menuBtn">
 		<a href="/gettingstarted.php" class="menu">Getting Started</a>
 	</div>
@@ -42,5 +44,5 @@
 	</div>
 	<div class="menuBtn">
 		<a href="about.php" class="menu">About</a>
-	</div>	
-</div>	
+	</div>
+</div>

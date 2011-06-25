@@ -395,6 +395,11 @@ span.returnMessage{
   margin-bottom: 10px;
 }
 
+.left_spacing
+{
+  margin-left: 10px;
+}
+
 .align_right
 {
   text-align: right !important;
