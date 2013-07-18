@@ -293,6 +293,28 @@ CREATE TABLE IF NOT EXISTS `settings` (
   PRIMARY KEY (`setting`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`setting`, `value`) VALUES
+('aud', '1.01347927'),
+('currenthashrate', '0'),
+('currentroundshares', '0'),
+('currentworkers', '0'),
+('difficulty', '1563027.9961162'),
+('mtgoxlast', '2.32'),
+('pagetitle', 'Ozco.in'),
+('sitebalance', '353739.299327128'),
+('sitepayoutaddress', 'LLTU9MyCG2U99quUnn2xjLfwpxJr4HQSpx'),
+('sitepercent', '0'),
+('siterewardtype', '1'),
+('slogan', 'Making Litecoins Simple'),
+('statstime', '1365245290'),
+('tradehill', '2.2600'),
+('websitename', 'Ozco.in');
+
+
 -- --------------------------------------------------------
 
 --
