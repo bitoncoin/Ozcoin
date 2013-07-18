@@ -280,7 +280,7 @@ class BitcoinClient extends jsonrpc_client {
    * @access public
    * @throws BitcoinClientException
    */
-  public function __construct($scheme, $username, $password, $address = "localhost", $port = 9000, $certificate_path = '', $debug_level = 0) {
+  public function __construct($scheme, $username, $password, $address = "localhost", $port, $certificate_path = '', $debug_level = 0) {
     $scheme = strtolower($scheme);
     if ($scheme != "http" && $scheme != "https")
       throw new BitcoinClientException("Scheme must be http or https");
