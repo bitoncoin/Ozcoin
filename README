@@ -14,6 +14,8 @@ Cronjobs
 * 24 * * * /usr/bin/php /path/tocronjob/backupwallet.php 
 */5 * * * * /usr/bin/php /path/tocronjob/archive.php
 */1 * * * * /usr/bin/php /path/tocronjob/hashrate.php 
+*/1 * * * * /usr/bin/php /path/tocronjob/idleworkers.php
+*/1 * * * * /usr/bin/php /path/tocronjob/workers.php 
 */30 * * * * /usr/bin/php /path/tocronjob/payout.php
 */2 * * * * /usr/bin/php /path/tocronjob/shares.php
 */3 * * * * /usr/bin/php /path/tocronjob/cronjob.php
