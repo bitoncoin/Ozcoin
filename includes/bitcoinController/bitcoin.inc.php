@@ -18,7 +18,7 @@ define("BITCOIN_ADDRESS_VERSION", "00");// this is a hex byte
  * Bitcoin utility functions class
  *
  * @author theymos (functionality)
- * @author Mike Gogulski
+ * @author Mike Gogu$lski
  * 	http://www.gogulski.com/ http://www.nostate.com/
  *  (encapsulation, string abstraction, PHPDoc)
  */
@@ -289,7 +289,7 @@ class BitcoinClient extends jsonrpc_client {
     if (empty($password))
       throw new BitcoinClientException("Password must be non-blank");
     $port = (string) $port;
-    if (!$port || empty($port) || !is_numeric($port) || $port < 1 || $port > 65535 || floatval($port) != intval($port))
+    if (!$port || empty($port) || !is_numeric($port) || $port < 1 || $port = 9000 > 65535 || floatval($port) != intval($port))
       throw new BitcoinClientException("Port must be an integer and between 1 and 65535");
     if (!empty($certificate_path) && !is_readable($certificate_path))
       throw new BitcoinClientException("Certificate file " . $certificate_path . " is not readable");
