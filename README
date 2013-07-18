@@ -11,12 +11,12 @@ Wayno
 
 Cronjobs
 
-* 24 * * * /usr/bin/php /path/tocronjob/backupwallet.php - 1 per day
-*/5 * * * * /usr/bin/php /path/tocronjob/archive.php - every 5 minutes
-*/1 * * * * /usr/bin/php /path/tocronjob/hashrate.php - 30 minutes
-*/30 * * * * /usr/bin/php /path/tocronjob/payout.php - 10 minutes
-*/2 * * * * /usr/bin/php /path/tocronjob/shares.php - 2 minutes
-*/3 * * * * /usr/bin/php /path/tocronjob/cronjob.php - 3 minutes
+* 24 * * * /usr/bin/php /path/tocronjob/backupwallet.php 
+*/5 * * * * /usr/bin/php /path/tocronjob/archive.php
+*/1 * * * * /usr/bin/php /path/tocronjob/hashrate.php 
+*/30 * * * * /usr/bin/php /path/tocronjob/payout.php
+*/2 * * * * /usr/bin/php /path/tocronjob/shares.php
+*/3 * * * * /usr/bin/php /path/tocronjob/cronjob.php
 
 # Mysql weekly fix to repair broken tables
 
